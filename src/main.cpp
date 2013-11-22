@@ -225,6 +225,49 @@ namespace
     // Initialize OpenGL's rendering modes
     void initRendering()
     {
+	const char * my_fragment_shader_source;
+	const char * my_vertex_shader_source;
+	
+	// Get Vertex And Fragment Shader Sources
+	ifstream inFile;
+	inFile.open("test.frag");
+
+	stringstream strStream;
+	strStream << inFile.rdbuf();
+	my_fragment_shader_source = strStream.str().c_str();
+
+	inFile.open("test.vert");
+	strStream << inFile.rdbuf();
+	my_vertex_shader_source = strStream.str().c_str();
+
+	GLenum my_program;
+	GLenum my_vertex_shader;
+	GLenum my_fragment_shader;
+	
+	glewInit();
+	// Create Shader And Program Objects
+	my_program = glCreateProgramObjectARB();
+	my_vertex_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	my_fragment_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	
+	// Load Shader Sources
+	glShaderSourceARB(my_vertex_shader, 1, &my_vertex_shader_source, NULL);
+	glShaderSourceARB(my_fragment_shader, 1, &my_fragment_shader_source, NULL);
+	
+	// Compile The Shaders
+	glCompileShaderARB(my_vertex_shader);
+	glCompileShaderARB(my_fragment_shader);
+	
+	// Attach The Shader Objects To The Program Object
+	glAttachObjectARB(my_program, my_vertex_shader);
+	glAttachObjectARB(my_program, my_fragment_shader);
+	
+	// Link The Program Object
+	glLinkProgramARB(my_program);
+	
+	// Use The Program Object Instead Of Fixed Function OpenGL
+	glUseProgramObjectARB(my_program);
+
         glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
         glEnable(GL_LIGHTING);     // Enable lighting calculations
         glEnable(GL_LIGHT0);       // Turn on light #0.

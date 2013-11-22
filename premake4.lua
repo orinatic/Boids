@@ -24,7 +24,7 @@ project(assignment)
   libdirs {"lib"}
   
   if not os.is("windows") then
-    linkoptions {[[`if [ "\`uname\`" = "Darwin" ]; then echo "-framework OpenGL -framework GLUT -lRK4_mac"; else echo "-lGL -lGLU -lglut -lRK4"; fi;`]]}
+    linkoptions {[[`if [ "\`uname\`" = "Darwin" ]; then echo "-framework OpenGL -framework GLUT -lRK4_mac"; else echo "-lGL -lGLU -lglut -lGLEW -lRK4"; fi;`]]}
   else
     links {"freeglut"}
     includedirs {"include"}
