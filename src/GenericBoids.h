@@ -23,6 +23,7 @@ class GenericBoid
  
  protected:
 	vector<Vector3f> state;
+	vector<float> pulls;
 };
 
 #endif

@@ -8,7 +8,7 @@ class FlockBoids: public GenericBoids
  public:
 	FlockBoids(int numBoids);
 
-	vector<Vector3f> evalF(vector<Vector3f> nearFlockmates, const AttractorBoids attractors);
+	vector<Vector3f> evalF(vector<Vector3f> nearFlockmates, const AttractorBoids& attractors);
 
 	void draw();
 };
