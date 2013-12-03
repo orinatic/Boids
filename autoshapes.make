@@ -68,6 +68,7 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/AttractorBoid.o \
 	$(OBJDIR)/camera.o \
 	$(OBJDIR)/FlockBoid.o \
 	$(OBJDIR)/GenericBoid.o \
@@ -132,6 +133,9 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
+$(OBJDIR)/AttractorBoid.o: src/AttractorBoid.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/camera.o: src/camera.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"

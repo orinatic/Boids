@@ -21,45 +21,47 @@ float maxSpeed;
 namespace
 {
 
-	vector<FlockBoid*> flockers; 
+	vector<FlockBoid*> flockers;
+	vector<AttractorBoid*> attractors;
 
 	void initSystem(int argc, char * argv[])
 	{
-		maxSpeed = 0.7f;
+		maxSpeed = 1.0f;
 		// seed the random number generator with the current time
 		srand( time( NULL ) );
 		flockers = vector<FlockBoid*>();
+		attractors = vector<AttractorBoid*>();
 		//flockers.push_back(new FlockBoid(Vector3f(0,0,0), Vector3f(.1,.1,.1)));
 		//flockers.push_back(new FlockBoid(Vector3f(1,1,1), Vector3f(-.1,-.1,.1)));	
 		float posStart = 2.0f;
-		float velStart = 0.1f;
-		for(int i = 0; i < 10; i++){
+		float velStart = 0.3f;
+		for(int i = 0; i < 100; i++){
 				flockers.push_back(new FlockBoid(
 											  Vector3f(posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart),
 											  Vector3f(velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart)));
 		}
-	
+		attractors.push_back(new AttractorBoid(Vector3f(0,1,1),Vector3f(0,0,0), 2.0f));
 	}
 
    void stepSystem()
   {
-	  vector<AttractorBoid*> at = vector<AttractorBoid*>();
 	  for(int i = 0; i < flockers.size(); i++){
-		  Vector3f acc = flockers[i]->evalF(flockers, at);
+		  Vector3f acc = flockers[i]->evalF(flockers, attractors);
 		  if(acc.abs() !=0){
-			  cout << "number is " << i << " and acc is ";
-			  acc.print();
-			  cout << "vel is ";
-			  flockers[i]->getVel().print();
+			  // cout << "number is " << i << " and acc is ";
+			  // acc.print();
+			  //cout << "vel is ";
+			  //flockers[i]->getVel().print();
 		  }
 		 
 		  Vector3f newPos = flockers[i]->getPos() + flockers[i]->getVel()*0.1f;
-		  /*for(int i = 0; i < 3; i++){
-			  if (newPos[i] > 3)
-				  newPos[i] = -2.95f;
-			  if (newPos[i] < -3)
-				  newPos[i] = 2.95f;
-		  }*/
+		  float SIZE = 10.0f;
+		  for(int i = 0; i < 3; i++){
+			  if(newPos[i] > SIZE / 2)
+				  newPos[i] -= SIZE;
+			  if(newPos[i] < -SIZE / 2)
+				  newPos[i] += SIZE;
+		  }
 		  Vector3f newVel = (flockers[i]->getVel() + acc);
 		  if(newVel.abs() > maxSpeed)
 			  newVel = newVel*maxSpeed/newVel.abs();
@@ -81,7 +83,11 @@ namespace
     
 	for(int i = 0; i < flockers.size(); i++){
 		flockers[i]->draw();
-	}     
+	}
+	
+	for(int i = 0; i <attractors.size(); i++){
+		attractors[i]->draw();
+	}
   }
     //----------------------------------------------------------------
     

@@ -13,6 +13,7 @@ class GenericBoid
 	GenericBoid(Vector3f position, Vector3f velocity);
 
 	Vector3f getPos(){return pos;};
+	Vector3f getPos(Vector3f op);
 	Vector3f getVel(){return vel;};
 	float getPull(){return pull;};
 
