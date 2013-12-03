@@ -68,13 +68,10 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/simpleSystem.o \
-	$(OBJDIR)/particleSystem.o \
-	$(OBJDIR)/main.o \
-	$(OBJDIR)/ClothSystem.o \
 	$(OBJDIR)/camera.o \
-	$(OBJDIR)/TimeStepper.o \
-	$(OBJDIR)/pendulumSystem.o \
+	$(OBJDIR)/FlockBoid.o \
+	$(OBJDIR)/GenericBoid.o \
+	$(OBJDIR)/main.o \
 
 RESOURCES := \
 
@@ -135,25 +132,16 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/simpleSystem.o: src/simpleSystem.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/particleSystem.o: src/particleSystem.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/main.o: src/main.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/ClothSystem.o: src/ClothSystem.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/camera.o: src/camera.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/TimeStepper.o: src/TimeStepper.cpp
+$(OBJDIR)/FlockBoid.o: src/FlockBoid.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/pendulumSystem.o: src/pendulumSystem.cpp
+$(OBJDIR)/GenericBoid.o: src/GenericBoid.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/main.o: src/main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

@@ -1,17 +1,19 @@
 #ifndef REPULSORBOIDS_H
 #define REPULSORBOIDS_H
 
-#include "GenericBoids.h"
+#include "GenericBoid.h"
+#include "extra.h"
+#include <vector>
 
-class RepulsorBoids: public GenericBoids
+class RepulsorBoids: public GenericBoid
 {
  public:
 	
 	/**Implementation will be tricky. The paramters will
 	 * likely vary based on individual shape needed
 	 **/
-	vector<vector3f> evalF(vector<Vector3f> nearFlockmates, const RepulsorBoids& repulsors)
+	Vector3f evalF(vector<GenericBoid*>& nf, vector<GenericBoid*>& at);
 	
-	void draw();
+	void draw()=0;
 };
 #endif

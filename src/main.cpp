@@ -1,64 +1,72 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 #include <vector>
-
 #include "extra.h"
 #include "camera.h"
 
 ///TODO: include more headers if necessary
-
+/**
 #include "TimeStepper.h"
 #include "simpleSystem.h"
 #include "pendulumSystem.h"
 #include "ClothSystem.h"
-
+**/
+#include "FlockBoid.h"
 
 using namespace std;
 
-// Globals here.
+float maxSpeed;
+
 namespace
 {
 
-    ParticleSystem *system;
-	ClothSystem *clothSystem;
-    TimeStepper * timeStepper;
-	float h = 0.04f;
-	bool uF = false;
+	vector<FlockBoid*> flockers; 
 
-  // initialize your particle systems
-  ///TODO: read argv here. set timestepper , step size etc
-  void initSystem(int argc, char * argv[])
-  {
-    // seed the random number generator with the current time
-    srand( time( NULL ) );
-	clothSystem = new ClothSystem(8);
-	system = clothSystem;
-    timeStepper = new RK4();
-
-	if(argc == 3) {
-		h = atof(argv[2]);
+	void initSystem(int argc, char * argv[])
+	{
+		maxSpeed = 0.7f;
+		// seed the random number generator with the current time
+		srand( time( NULL ) );
+		flockers = vector<FlockBoid*>();
+		//flockers.push_back(new FlockBoid(Vector3f(0,0,0), Vector3f(.1,.1,.1)));
+		//flockers.push_back(new FlockBoid(Vector3f(1,1,1), Vector3f(-.1,-.1,.1)));	
+		float posStart = 2.0f;
+		float velStart = 0.1f;
+		for(int i = 0; i < 10; i++){
+				flockers.push_back(new FlockBoid(
+											  Vector3f(posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart),
+											  Vector3f(velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart)));
+		}
+	
 	}
 
-	if(argc > 1) {
-		if(argv[1][0] == 'e')
-			timeStepper = new ForwardEuler();
-		if(argv[1][0] == 't')
-			timeStepper = new Trapzoidal();
-		if(argv[1][0] == 'r')
-			timeStepper = new RK4();
-	}
-  }
-
-  // Take a step forward for the particle shower
-  ///TODO: Optional. modify this function to display various particle systems
-  ///and switch between different timeSteppers
-  void stepSystem()
+   void stepSystem()
   {
-    if(timeStepper!=0){
-      timeStepper->takeStep(system,h);
-    }
+	  vector<AttractorBoid*> at = vector<AttractorBoid*>();
+	  for(int i = 0; i < flockers.size(); i++){
+		  Vector3f acc = flockers[i]->evalF(flockers, at);
+		  if(acc.abs() !=0){
+			  cout << "number is " << i << " and acc is ";
+			  acc.print();
+			  cout << "vel is ";
+			  flockers[i]->getVel().print();
+		  }
+		 
+		  Vector3f newPos = flockers[i]->getPos() + flockers[i]->getVel()*0.1f;
+		  /*for(int i = 0; i < 3; i++){
+			  if (newPos[i] > 3)
+				  newPos[i] = -2.95f;
+			  if (newPos[i] < -3)
+				  newPos[i] = 2.95f;
+		  }*/
+		  Vector3f newVel = (flockers[i]->getVel() + acc);
+		  if(newVel.abs() > maxSpeed)
+			  newVel = newVel*maxSpeed/newVel.abs();
+		  flockers[i]->setPos(newPos);
+		  flockers[i]->setVel(newVel);
+	  }
+   
   }
 
   // Draw the current particle positions
@@ -71,22 +79,11 @@ namespace
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
     
-    glutSolidSphere(0.1f,10.0f,10.0f);
-    
-    system->draw();
-    
-    
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, floorColor);
-    glPushMatrix();
-    glTranslatef(0.0f,-5.0f,0.0f);
-    glScaled(50.0f,0.01f,50.0f);
-    glutSolidCube(1);
-    glPopMatrix();
-    
+	for(int i = 0; i < flockers.size(); i++){
+		flockers[i]->draw();
+	}     
   }
-        
-
-    //-------------------------------------------------------------------
+    //----------------------------------------------------------------
     
         
     // This is the camera
@@ -121,6 +118,7 @@ namespace
             camera.SetCenter( Vector3f::ZERO );
             break;
         }
+		/*
 		case '1':
 			system = new SimpleSystem();
 			break;
@@ -146,7 +144,7 @@ namespace
 			else
 				clothSystem->userForce = Vector3f(0.0f, 0.0f, 50.0f);
 			uF = !uF;
-				
+		*/		
         default:
             cout << "Unhandled key press " << key << "." << endl;        
         }
