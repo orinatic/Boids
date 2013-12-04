@@ -16,7 +16,7 @@ using namespace std;
 
 float maxSpeed;
 float viewDistance;
-float drag = 0.02;
+float drag = 0.00;
 int numFlockers;
 char* fileIn;
 Mesh* pattern;
@@ -32,8 +32,8 @@ namespace
 	
 	void initSystem(int argc, char * argv[])
 	{
-		viewDistance = 2.5f;
-		numFlockers = 150;
+		viewDistance = 1.5f;
+		numFlockers = 100;
 		pattern = new Mesh();
 		for(int argNum = 1; argNum < argc; ++argNum){
 			string arg = argv[argNum];
@@ -50,7 +50,7 @@ namespace
 		attractors = vector<AttractorBoid*>();
 		//flockers.push_back(new FlockBoid(Vector3f(0,0,0), Vector3f(.1,.1,.1)));
 		//flockers.push_back(new FlockBoid(Vector3f(1,1,1), Vector3f(-.1,-.1,.1)));	
-		float posStart = 1.0f;
+		float posStart = 4.0f;
 		float velStart = 0.3f;
 		float attractorPull = 2.0f;
 		cout << "number of vertices" << pattern->vertices.size() << endl;
