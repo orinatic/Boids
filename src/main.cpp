@@ -24,6 +24,11 @@ vector<AttractorBoid*> attractors;
 
 namespace
 {
+        
+    // This is the camera
+    Camera camera;
+  int argc;
+  char** argv;
 	
 	void initSystem(int argc, char * argv[])
 	{
@@ -35,7 +40,7 @@ namespace
 			}
 		}
 		viewDistance = 2.5f;
-		numFlockers = 150;
+		numFlockers = 4;
 		pattern = new Mesh();
 		pattern->load(fileIn, numFlockers, viewDistance);
 		maxSpeed = 1.0f;
@@ -65,7 +70,9 @@ namespace
 	}
 
 	void stepSystem()
-	{
+	{	
+	  Vector3f averagePos = (0, 0, 0);
+	  Vector3f averageVel = (0, 0, 0);
 	  for(int i = 0; i < flockers.size(); i++){
 		  Vector3f acc = flockers[i]->evalF(flockers, attractors);
 		  if(acc.abs() !=0){
@@ -89,9 +96,28 @@ namespace
 			  newVel = newVel*maxSpeed/newVel.abs();
 		  flockers[i]->setPos(newPos);
 		  flockers[i]->setVel(newVel);
+		  averagePos += newPos;
+		  averageVel += newVel.normalized();
 	  }
-   
+
+	  averagePos = averagePos / flockers.size();
+	  averageVel = averageVel / flockers.size();
+	  float radius = 0.0f;
+	  float maxRadius = 0.0f;
+	  for(int i = 0; i < flockers.size(); i++){
+	    float r = (flockers[i]->getPos() - averagePos).abs();
+	    if(r > maxRadius)
+	      maxRadius = r;
+	    radius += r;
+	  }
+	  radius = radius / flockers.size();
+	  
+	  //Matrix4f eye = Matrix4f::identity();
+	  //camera.SetRotation( eye );
+	  //camera.SetCenter(averagePos - averageVel.normalized() * radius);
   }
+
+  bool displayBox = false;
 
   // Draw the current particle positions
   void drawSystem()
@@ -110,12 +136,36 @@ namespace
 	for(int i = 0; i <attractors.size(); i++){
 		attractors[i]->draw();
 	}
+
+	if(displayBox) {
+	  glPushMatrix();
+	  glTranslatef(0, 0, 0);
+	  
+	  glBegin(GL_POLYGON);
+	  glColor4f(1.0f, 1.0f, 1.0f, 0.1f);
+	  glVertex3f(-5,-5,-5); glVertex3f(-5,5,-5); glVertex3f(5,5,-5); glVertex3f(5,-5,-5);
+	  glEnd();
+	  glBegin(GL_POLYGON);
+	  glVertex3f(-5,-5,5); glVertex3f(-5,5,5); glVertex3f(5,5,5); glVertex3f(5,-5,5);
+	  glEnd();
+	  glBegin(GL_POLYGON);
+	  glVertex3f(-5,-5,-5); glVertex3f(-5,-5,5); glVertex3f(5,-5,5); glVertex3f(5,-5,-5);
+	  glEnd();
+	  glBegin(GL_POLYGON);
+	  glVertex3f(-5,5,-5); glVertex3f(-5,5,5); glVertex3f(5,5,5); glVertex3f(5,5,-5);
+	  glEnd();
+	  glBegin(GL_POLYGON);
+	  glVertex3f(-5,-5,-5); glVertex3f(-5,-5,5); glVertex3f(-5,5,5); glVertex3f(-5,5,-5);
+	  glEnd();
+	  glBegin(GL_POLYGON);
+	  glVertex3f(5,-5,-5); glVertex3f(5,-5,5); glVertex3f(5,5,5); glVertex3f(5,5,-5);
+	  glEnd();
+	  
+	  glPopMatrix();
+	}
   }
-    //----------------------------------------------------------------
+  //----------------------------------------------------------------
     
-        
-    // This is the camera
-    Camera camera;
 
     // These are state variables for the UI
     bool g_mousePressed = false;
@@ -152,6 +202,15 @@ namespace
 				attractors[i]->toggleDraw();
 			}
 			break;
+	case 'b':
+	  displayBox = !displayBox;
+	  break;
+	case 'r':
+	  initSystem(argc, argv);
+	  break;
+	case 'f':
+	    flockers[0]->toggleForceDraw();
+	  break;
 		/*
 		case '2':
 			system = new PendulumSystem(2);
@@ -261,8 +320,8 @@ namespace
         glShadeModel(GL_SMOOTH);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
         // Clear to black
         glClearColor(0,0,0,1);
@@ -434,9 +493,11 @@ GLuint loadShader(string vert, string frag) {
 
 // Main routine.
 // Set up OpenGL, define the callbacks and start the main loop
-int main( int argc, char* argv[] )
+int main( int argcx, char* argvx[] )
 {
-    glutInit( &argc, argv );
+    glutInit( &argcx, argvx );
+    argc = argcx;
+    argv = argvx;
     // We're going to animate it, so double buffer 
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 

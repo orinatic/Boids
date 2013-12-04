@@ -7,14 +7,24 @@ const float pullConstant = 0.05f;
 const float minDistance = 0.70f;
 const float maxSteer = .05f;
 float vDistance;;
+Vector3f avoidDir;
+Vector3f matchVDir;
+Vector3f centerDir;
+Vector3f attractorDir;
 
 FlockBoid::FlockBoid(Vector3f position, Vector3f velocity, float view) : GenericBoid(position, velocity){
 	pos = position;
 	vel = velocity;
 	pull = 0;
 	vDistance = view;
-	
+	isForceDraw = false;
 }
+
+void FlockBoid::toggleForceDraw()
+{
+	isForceDraw = !isForceDraw;
+}
+
 Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 	Vector3f sectionAcc = (0,0,0);
 	Vector3f totalAcc = (0,0,0);
@@ -28,6 +38,8 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		}
 		//cout << "steer acceleration is " << sectionAcc.abs() << endl;
 	}
+	avoidDir = sectionAcc.normalized() / 10.0f;
+	
 	if((totalAcc + sectionAcc).abs() < maxSteer||sectionAcc.abs()<0.001){
 		totalAcc += sectionAcc;
 	} else {
@@ -44,6 +56,7 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		}
 	}
 	sectionAcc = sectionAcc/n;
+	matchVDir = sectionAcc.normalized() / 10.0f;
 	if((totalAcc + sectionAcc).abs() < maxSteer||sectionAcc.abs()<0.001){
 		totalAcc += sectionAcc;
 	} else {
@@ -60,6 +73,7 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		}
 	}
 	sectionAcc = sectionAcc/n;
+	centerDir = sectionAcc.normalized() / 10.0f;
 	if((totalAcc + sectionAcc).abs() < maxSteer||sectionAcc.abs() < 0.001){
 		totalAcc += sectionAcc;
 	} else {
@@ -81,6 +95,7 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		}
 	}
 	sectionAcc = sectionAcc/n;
+	attractorDir = sectionAcc.normalized() / 10.0f; 
 	if((totalAcc + sectionAcc).abs() < maxSteer||sectionAcc.abs() < 0.001){
 		totalAcc += sectionAcc;
 	} else {
@@ -102,6 +117,33 @@ void FlockBoid::draw()
         glColor4f(vel[0] + 0.5f, vel[1] + 0.5f, vel[2] + 0.5f, d);
         glTranslatef(-voff[0], -voff[1], -voff[2]);
 		glutSolidSphere(0.075f - i * 0.005f,10.0f,10.0f);
+	}
+
+	if(isForceDraw) {
+	  glPushMatrix();
+	  
+	  // Save current state of OpenGL
+	  glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+	  // This is to draw the axes when the mouse button is down
+	  glDisable(GL_LIGHTING);
+	  glLineWidth(3);
+	  glPushMatrix();
+	  glScaled(5.0,5.0,5.0);
+	  glBegin(GL_LINES);
+
+	  glColor4f(1,0.5,0.5,1); glVertex3f(0,0,0); glVertex3f(avoidDir[0],avoidDir[1],avoidDir[2]);
+	  glColor4f(0.5,1,0.5,1); glVertex3f(0,0,0); glVertex3f(matchVDir[0], matchVDir[1], matchVDir[2]);
+	  glColor4f(0.5,0.5,1,1); glVertex3f(0,0,0); glVertex3f(centerDir[0], centerDir[1], centerDir[2]);
+	  glColor4f(0.5,1,1,1); glVertex3f(0,0,0); glVertex3f(attractorDir[0], attractorDir[1], attractorDir[2]);
+	  
+	  
+	  glEnd();
+	  glPopMatrix();
+	  
+	  glPopAttrib();
+	  glPopMatrix();
+	  
 	}
 	glPopMatrix();
 }
