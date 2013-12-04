@@ -6,7 +6,7 @@
 class FlockBoid: public GenericBoid
 {
  public:
-	FlockBoid(Vector3f position, Vector3f velocity);
+	FlockBoid(Vector3f position, Vector3f velocity, float view);
 
 	Vector3f evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at);
 

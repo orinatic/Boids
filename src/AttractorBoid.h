@@ -12,7 +12,9 @@ class AttractorBoid: public GenericBoid
 	Vector3f evalF(vector<AttractorBoid*>& nf, vector<AttractorBoid*>& at);
 	
 	void draw();
-	
+	void toggleDraw();
+ private:
+	bool isDraw;
 };
 	
 #endif

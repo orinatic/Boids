@@ -68,10 +68,12 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/Mesh.o \
+	$(OBJDIR)/AttractorBoid.o \
+	$(OBJDIR)/camera.o \
+	$(OBJDIR)/FlockBoid.o \
 	$(OBJDIR)/GenericBoid.o \
 	$(OBJDIR)/main.o \
-	$(OBJDIR)/FlockBoid.o \
-	$(OBJDIR)/camera.o \
 
 RESOURCES := \
 
@@ -132,16 +134,22 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/GenericBoid.o: src/GenericBoid.cpp
+$(OBJDIR)/Mesh.o: src/Mesh.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/main.o: src/main.cpp
+$(OBJDIR)/AttractorBoid.o: src/AttractorBoid.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/camera.o: src/camera.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/FlockBoid.o: src/FlockBoid.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/camera.o: src/camera.cpp
+$(OBJDIR)/GenericBoid.o: src/GenericBoid.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/main.o: src/main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

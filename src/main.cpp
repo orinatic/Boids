@@ -7,28 +7,37 @@
 #include <vector>
 #include "extra.h"
 #include "camera.h"
-
-///TODO: include more headers if necessary
-/**
-#include "TimeStepper.h"
-#include "simpleSystem.h"
-#include "pendulumSystem.h"
-#include "ClothSystem.h"
-**/
 #include "FlockBoid.h"
+#include "Mesh.h"
+
+
 
 using namespace std;
 
 float maxSpeed;
+float viewDistance;
+int numFlockers;
+char* fileIn;
+Mesh* pattern;
+vector<FlockBoid*> flockers;
+vector<AttractorBoid*> attractors;
 
 namespace
 {
-
-	vector<FlockBoid*> flockers;
-	vector<AttractorBoid*> attractors;
-
+	
 	void initSystem(int argc, char * argv[])
 	{
+		for(int argNum = 1; argNum < argc; ++argNum){
+			string arg = argv[argNum];
+			if(arg == "-input"){
+				fileIn = argv[argNum+1];
+				argNum++;
+			}
+		}
+		viewDistance = 1.5f;
+		numFlockers = 100;
+		pattern = new Mesh();
+		pattern->load(fileIn, numFlockers, viewDistance);
 		maxSpeed = 1.0f;
 		// seed the random number generator with the current time
 		srand( time( NULL ) );
@@ -37,24 +46,35 @@ namespace
 		//flockers.push_back(new FlockBoid(Vector3f(0,0,0), Vector3f(.1,.1,.1)));
 		//flockers.push_back(new FlockBoid(Vector3f(1,1,1), Vector3f(-.1,-.1,.1)));	
 		float posStart = 2.0f;
-		float velStart = 0.3f;
-		for(int i = 0; i < 100; i++){
+		float velStart = 0.2f;
+		float attractorPull = 2.0f;
+		cout << "number of vertices" << pattern->vertices.size() << endl;
+		for(int i = 0; i < pattern->vertices.size(); i++){
+			attractors.push_back(new AttractorBoid(pattern->vertices[i], Vector3f(0,0,0), attractorPull));
+		}
+		for(int i = 0; i < numFlockers; i++){
 				flockers.push_back(new FlockBoid(
 											  Vector3f(posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart),
-											  Vector3f(velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart)));
+											  Vector3f(velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart),viewDistance));
 		}
-		//attractors.push_back(new AttractorBoid(Vector3f(0,1,1),Vector3f(0,0,0), 2.0f));
+		/*	attractors.push_back(new AttractorBoid(Vector3f(-1,1,1),Vector3f(0,0,0),  attractorPull));
+		attractors.push_back(new AttractorBoid(Vector3f(-1,-1,1),Vector3f(0,0,0),  attractorPull));
+		attractors.push_back(new AttractorBoid(Vector3f(-1, 0,-1),Vector3f(0,0,0),  attractorPull));
+		attractors.push_back(new AttractorBoid(Vector3f(1,0,0),Vector3f(0,0,0),  attractorPull));
+		attractors.push_back(new AttractorBoid(Vector3f(0,0,0),Vector3f(0,0,0),  attractorPull));*/
 	}
 
-   void stepSystem()
-  {
+	void stepSystem()
+	{
 	  for(int i = 0; i < flockers.size(); i++){
 		  Vector3f acc = flockers[i]->evalF(flockers, attractors);
 		  if(acc.abs() !=0){
 			  // cout << "number is " << i << " and acc is ";
 			  // acc.print();
-			  //cout << "vel is ";
+			  // cout << "vel is ";
 			  //flockers[i]->getVel().print();
+			  //cout << "pos is ";
+			  //flockers[i]->getPos().print();
 		  }
 		  Vector3f newPos = flockers[i]->getPos() + flockers[i]->getVel()*0.1f;
 		  float SIZE = 10.0f;
@@ -126,10 +146,13 @@ namespace
             camera.SetCenter( Vector3f::ZERO );
             break;
         }
-		/*
-		case '1':
-			system = new SimpleSystem();
+		
+		case 'a':
+			for(int i = 0; i<attractors.size(); i++){
+				attractors[i]->toggleDraw();
+			}
 			break;
+		/*
 		case '2':
 			system = new PendulumSystem(2);
 			break;
