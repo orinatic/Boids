@@ -14,6 +14,8 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 	Vector3f v;
 	Vector3f center = Vector3f(0,0,0);
 	Tuple3u vf;
+		
+	std::vector<Tuple3u> uFaces;
 	if( file.is_open()){
 		while( getline(file, line)){
 			stringstream ss(line);
@@ -28,44 +30,35 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 			}
 			else if(start == "f"){
 				ss >> vf[0] >> vf[1] >> vf[2];
-				faces.push_back(vf);
+				uFaces.push_back(vf);
 				cout << "vf is " << vf[0] << "," <<vf[1] << "," << vf[2] << endl;
 			}
 		}
 		center = center/vertices.size();
-		bool rep = true;
-		while(rep == true){
-			cout << "repeated" <<endl;
-			rep = false;
-			int numFaces = faces.size();
-			for (int i = 0; i<numFaces; i++){
-				Vector3f faceCenter = (0,0,0);
-				cout << "face is :" << faces[i][0] << " " << faces[i][1] << " " << faces[i][2] << endl;
-				cout << "vertecies were: ";
-				for(int j = 0; j < 3; j++){
-					faceCenter += vertices[faces[i][j]-1]/3.0f;
-					vertices[faces[i][j]-1].print();
-				}
-				cout << "got face center: "; 
-				faceCenter.print();
-				float distToCenter = 0;
-				for(int j = 0; j < 3; j++){
-					distToCenter = max(distToCenter, (faceCenter-vertices[faces[i][j]]).abs());
-				}
-				//cout << "got distToCenter: " << distToCenter << endl;
-				if(distToCenter > 0.75*vDistance){
-					vertices.push_back(faceCenter);
-					for(int k = 0; k < 3; k ++){
-						vf[0] = faces[i][(0+k)%3];
-						vf[1] = faces[i][(1+k)%3];
-						vf[2] = vertices.size()-1;
-						faces.push_back(vf);	
-					}
-					faces.erase(i);
-					//rep = true;
-				}
-				//cout << "added points. There are now " << vertices.size() << " points " << endl;;
-			}
+		while(uFaces.size() > 0) {
+		  cout << uFaces.size() << endl;
+		  Tuple3u f = uFaces.back();
+		  uFaces.pop_back();
+		  Vector3f center = (0,0,0);
+		  for(int j = 0; j < 3; j++) {
+		    center += vertices[f[j] - 1];
+		    vertices[f[j] - 1].print();
+		  }
+		  center = center / 3.0f;
+		  float radius = 0.0f;
+		  for(int j = 0; j < 3; j++)
+		    radius = max(radius, (vertices[f[j] - 1] - center).abs());
+		  cout << radius << endl;
+		  center.print();
+		  
+		  if(radius > 0.75 * vDistance) {
+		    int n = vertices.size() + 1;
+		    vertices.push_back((vertices[f[1] - 1] + vertices[f[0] - 1]) / 2.0f);
+		    vertices.push_back((vertices[f[2] - 1] + vertices[f[1] - 1]) / 2.0f);
+		    vertices.push_back((vertices[f[0] - 1] + vertices[f[2] - 1]) / 2.0f);
+		    uFaces.push_back(Tuple3u(n, n+1, n+2));
+		  }
+		  faces.push_back(f);
 		}
 	}
 }

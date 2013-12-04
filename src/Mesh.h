@@ -12,6 +12,12 @@
 class Tuple3u
 {
  public:
+  Tuple3u() {};
+  Tuple3u(unsigned a, unsigned b, unsigned c) {
+    elements[0] = a;
+    elements[1] = b;
+    elements[2] = c;
+  }
 	unsigned& operator [] (int i)
 	{
 		return elements[i];
