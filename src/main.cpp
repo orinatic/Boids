@@ -43,7 +43,7 @@ namespace
 											  Vector3f(posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart),
 											  Vector3f(velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart, velStart*2*rand()/RAND_MAX-velStart)));
 		}
-		attractors.push_back(new AttractorBoid(Vector3f(0,1,1),Vector3f(0,0,0), 2.0f));
+		//attractors.push_back(new AttractorBoid(Vector3f(0,1,1),Vector3f(0,0,0), 2.0f));
 	}
 
    void stepSystem()
