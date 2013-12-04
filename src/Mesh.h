@@ -27,8 +27,6 @@ struct Mesh
 	std::vector< Tuple3u > faces;
 
 	void load(const char *filename, const int numBoids, const float vDistance);
-
-	void addPoints(const int index, const float vDistance);
 };
 
 #endif

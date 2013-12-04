@@ -29,22 +29,31 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 			else if(start == "f"){
 				ss >> vf[0] >> vf[1] >> vf[2];
 				faces.push_back(vf);
+				cout << "vf is " << vf[0] << "," <<vf[1] << "," << vf[2] << endl;
 			}
 		}
 		center = center/vertices.size();
 		bool rep = true;
-		while(rep){
+		while(rep == true){
+			cout << "repeated" <<endl;
 			rep = false;
-			for (int i = 0; i <faces.size(); i++){
+			int numFaces = faces.size();
+			for (int i = 0; i<numFaces; i++){
 				Vector3f faceCenter = (0,0,0);
+				cout << "face is :" << faces[i][0] << " " << faces[i][1] << " " << faces[i][2] << endl;
+				cout << "vertecies were: ";
 				for(int j = 0; j < 3; j++){
-					faceCenter += vertices[faces[i][j]]/3.0f;
+					faceCenter += vertices[faces[i][j]-1]/3.0f;
+					vertices[faces[i][j]-1].print();
 				}
+				cout << "got face center: "; 
+				faceCenter.print();
 				float distToCenter = 0;
 				for(int j = 0; j < 3; j++){
 					distToCenter = max(distToCenter, (faceCenter-vertices[faces[i][j]]).abs());
 				}
-				if(distToCenter > 1.5*vDistance){
+				//cout << "got distToCenter: " << distToCenter << endl;
+				if(distToCenter > 0.75*vDistance){
 					vertices.push_back(faceCenter);
 					for(int k = 0; k < 3; k ++){
 						vf[0] = faces[i][(0+k)%3];
@@ -52,15 +61,13 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 						vf[2] = vertices.size()-1;
 						faces.push_back(vf);	
 					}
-					faces.erase(faces.begin()+i);
-					rep = true;
+					faces.erase(i);
+					//rep = true;
 				}
+				//cout << "added points. There are now " << vertices.size() << " points " << endl;;
 			}
-			}
-		
+		}
 	}
 }
 
-void Mesh::addPoints(const int index, const float vDistance){
-	
-}
+
