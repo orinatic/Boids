@@ -34,8 +34,8 @@ namespace
 				argNum++;
 			}
 		}
-		viewDistance = 1.5f;
-		numFlockers = 100;
+		viewDistance = 2.5f;
+		numFlockers = 150;
 		pattern = new Mesh();
 		pattern->load(fileIn, numFlockers, viewDistance);
 		maxSpeed = 1.0f;
@@ -78,13 +78,13 @@ namespace
 		  }
 		  Vector3f newPos = flockers[i]->getPos() + flockers[i]->getVel()*0.1f;
 		  float SIZE = 10.0f;
-		  for(int i = 0; i < 3; i++){
-			  if(newPos[i] > SIZE / 2)
-				  newPos[i] -= SIZE;
-			  if(newPos[i] < -SIZE / 2)
-				  newPos[i] += SIZE;
-		  }
 		  Vector3f newVel = (flockers[i]->getVel() + acc);
+		  for(int i = 0; i < 3; i++){
+		    if(newPos[i] > SIZE / 2)
+		      newVel[i] = -abs(newVel[i]);
+		    if(newPos[i] < -SIZE / 2)
+		      newVel[i] = abs(newVel[i]);
+		  }
 		  if(newVel.abs() > maxSpeed)
 			  newVel = newVel*maxSpeed/newVel.abs();
 		  flockers[i]->setPos(newPos);
@@ -449,7 +449,7 @@ int main( int argc, char* argv[] )
     camera.SetDistance( 10 );
     camera.SetCenter( Vector3f::ZERO );
     
-    glutCreateWindow("Assignment 3");
+    glutCreateWindow("Autoshapes");
     glewInit();
     // Initialize OpenGL parameters.
     initRendering();

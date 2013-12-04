@@ -86,6 +86,7 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 	} else {
 		totalAcc += sectionAcc*(maxSteer-totalAcc.abs())/sectionAcc.abs();
 	}
+
 	return (totalAcc);
 }
 
