@@ -31,7 +31,7 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 				faces.push_back(vf);
 			}
 		}
-		/*center = center/vertices.size();
+		center = center/vertices.size();
 		bool rep = true;
 		while(rep){
 			rep = false;
@@ -42,19 +42,22 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 				}
 				float distToCenter = 0;
 				for(int j = 0; j < 3; j++){
-					distToCenter = max(distToCenter, (faceCenter-vertices[faces[i][j]]).abs())
+					distToCenter = max(distToCenter, (faceCenter-vertices[faces[i][j]]).abs());
 				}
 				if(distToCenter > 1.5*vDistance){
 					vertices.push_back(faceCenter);
-					vf[0] = faces[i][0];
-					vf[1] = faces[i][1];
-					vf[2] = faces[i][2];
-					faces.push_back(vf);
-					faces.erase[i];
+					for(int k = 0; k < 3; k ++){
+						vf[0] = faces[i][(0+k)%3];
+						vf[1] = faces[i][(1+k)%3];
+						vf[2] = vertices.size()-1;
+						faces.push_back(vf);	
+					}
+					faces.erase(faces.begin()+i);
+					rep = true;
 				}
 			}
-		}
-		*/
+			}
+		
 	}
 }
 
