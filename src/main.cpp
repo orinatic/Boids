@@ -32,6 +32,8 @@ namespace
 	
 	void initSystem(int argc, char * argv[])
 	{
+		viewDistance = 2.5f;
+		numFlockers = 150;
 		pattern = new Mesh();
 		for(int argNum = 1; argNum < argc; ++argNum){
 			string arg = argv[argNum];
@@ -41,8 +43,6 @@ namespace
 				argNum++;
 			}
 		}
-		viewDistance = 2.5f;
-		numFlockers = 150;
 		maxSpeed = 1.0f;
 		// seed the random number generator with the current time
 		srand( time( NULL ) );
@@ -54,10 +54,12 @@ namespace
 		float velStart = 0.3f;
 		float attractorPull = 2.0f;
 		cout << "number of vertices" << pattern->vertices.size() << endl;
-		for(int i = 0; i < pattern->vertices.size()-1; i++){
-			attractors.push_back(new AttractorBoid(pattern->vertices[i], Vector3f(0,0,0), attractorPull));
+		if(pattern->vertices.size() > 0) {
+		  for(int i = 0; i < pattern->vertices.size()-1; i++){
+		    attractors.push_back(new AttractorBoid(pattern->vertices[i], Vector3f(0,0,0), attractorPull));
+		  }
+		  attractors.push_back(new AttractorBoid(pattern->vertices[pattern->vertices.size()-1], Vector3f(0,0,0), -3*attractorPull));
 		}
-		attractors.push_back(new AttractorBoid(pattern->vertices[pattern->vertices.size()-1], Vector3f(0,0,0), -3*attractorPull));
 		for(int i = 0; i < numFlockers; i++){
 				flockers.push_back(new FlockBoid(
 											  Vector3f(posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart),
