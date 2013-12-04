@@ -1,6 +1,9 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include "extra.h"
 #include "camera.h"
@@ -53,7 +56,6 @@ namespace
 			  //cout << "vel is ";
 			  //flockers[i]->getVel().print();
 		  }
-		 
 		  Vector3f newPos = flockers[i]->getPos() + flockers[i]->getVel()*0.1f;
 		  float SIZE = 10.0f;
 		  for(int i = 0; i < 3; i++){
@@ -225,53 +227,11 @@ namespace
     // Initialize OpenGL's rendering modes
     void initRendering()
     {
-	const char * my_fragment_shader_source;
-	const char * my_vertex_shader_source;
-	
-	// Get Vertex And Fragment Shader Sources
-	ifstream inFile;
-	inFile.open("test.frag");
-
-	stringstream strStream;
-	strStream << inFile.rdbuf();
-	my_fragment_shader_source = strStream.str().c_str();
-
-	inFile.open("test.vert");
-	strStream << inFile.rdbuf();
-	my_vertex_shader_source = strStream.str().c_str();
-
-	GLenum my_program;
-	GLenum my_vertex_shader;
-	GLenum my_fragment_shader;
-	
-	glewInit();
-	// Create Shader And Program Objects
-	my_program = glCreateProgramObjectARB();
-	my_vertex_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	my_fragment_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	
-	// Load Shader Sources
-	glShaderSourceARB(my_vertex_shader, 1, &my_vertex_shader_source, NULL);
-	glShaderSourceARB(my_fragment_shader, 1, &my_fragment_shader_source, NULL);
-	
-	// Compile The Shaders
-	glCompileShaderARB(my_vertex_shader);
-	glCompileShaderARB(my_fragment_shader);
-	
-	// Attach The Shader Objects To The Program Object
-	glAttachObjectARB(my_program, my_vertex_shader);
-	glAttachObjectARB(my_program, my_fragment_shader);
-	
-	// Link The Program Object
-	glLinkProgramARB(my_program);
-	
-	// Use The Program Object Instead Of Fixed Function OpenGL
-	glUseProgramObjectARB(my_program);
-
         glEnable(GL_DEPTH_TEST);   // Depth testing must be turned on
         glEnable(GL_LIGHTING);     // Enable lighting calculations
         glEnable(GL_LIGHT0);       // Turn on light #0.
-
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
         glEnable(GL_NORMALIZE);
 
         // Setup polygon drawing
@@ -358,14 +318,104 @@ namespace
     
 }
 
+char* getFile(const char *fileName) {
+	char* text;
+    
+	if (fileName != NULL) {
+        FILE *file = fopen(fileName, "rt");
+        
+		if (file != NULL) {
+            fseek(file, 0, SEEK_END);
+            int count = ftell(file);
+            rewind(file);
+            
+			if (count > 0) {
+				text = (char*)malloc(sizeof(char) * (count + 1));
+				count = fread(text, sizeof(char), count, file);
+				text[count] = '\0';
+			}
+			fclose(file);
+		}
+	}
+	return text;
+}
+
+GLuint loadShader(string vert, string frag) {
+  const char* fragData = getFile(frag.c_str());
+  const char* vertData = getFile(vert.c_str());
+
+  cout << "Vert:\n" << vertData << endl;
+  cout << "Frag:\n" << fragData << endl;
+
+  GLuint vertexShader, fragmentShader, program;
+  GLint compiled;
+  program = glCreateProgramObjectARB();
+  vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSourceARB(vertexShader, 1, &vertData, NULL);
+  glCompileShaderARB(vertexShader);
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &compiled);
+  if(!compiled) {
+    GLint blen = 0;	
+    GLsizei slen = 0;
+    
+    glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &blen);
+    if (blen > 1) {
+      GLchar* compiler_log = (GLchar*)malloc(blen);
+      glGetInfoLogARB(vertexShader, blen, &slen, compiler_log);
+      cout << "compiler_log:\n" << compiler_log << endl;
+      free(compiler_log);
+    }
+  }
+
+
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSourceARB(fragmentShader, 1, &fragData, NULL);
+  glCompileShaderARB(fragmentShader);
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &compiled);
+  if(!compiled) {
+    GLint blen = 0;	
+    GLsizei slen = 0;
+    
+    glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &blen);
+    if (blen > 1) {
+      GLchar* compiler_log = (GLchar*)malloc(blen);
+      glGetInfoLogARB(fragmentShader, blen, &slen, compiler_log);
+      cout << "compiler_log:\n" << compiler_log << endl;
+      free(compiler_log);
+    }
+  }
+
+  program = glCreateProgram();
+  glAttachShader(program, vertexShader);
+  glAttachShader(program, fragmentShader);
+  glLinkProgram(program);
+
+  GLint linked;
+  glGetProgramiv(program, GL_LINK_STATUS, &linked);
+  if (!linked) {
+    GLint blen = 0;	
+    GLsizei slen = 0;
+    
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &blen);
+    if (blen > 1) {
+      GLchar* compiler_log = (GLchar*)malloc(blen);
+      glGetInfoLogARB(program, blen, &slen, compiler_log);
+      cout << "compiler_log:\n" << compiler_log << endl;
+      free(compiler_log);
+    }
+  } 
+  
+  glUseProgramObjectARB(program);
+  return program;
+}
+
 // Main routine.
 // Set up OpenGL, define the callbacks and start the main loop
 int main( int argc, char* argv[] )
 {
     glutInit( &argc, argv );
-
     // We're going to animate it, so double buffer 
-    glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+    glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 
     // Initial parameters for window position and size
     glutInitWindowPosition( 60, 60 );
@@ -377,10 +427,12 @@ int main( int argc, char* argv[] )
     camera.SetCenter( Vector3f::ZERO );
     
     glutCreateWindow("Assignment 3");
-
+    glewInit();
     // Initialize OpenGL parameters.
     initRendering();
 
+    GLuint program = loadShader("boid.vert", "boid.frag");
+	
     // Setup particle system
     initSystem(argc,argv);
 
