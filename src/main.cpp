@@ -40,7 +40,7 @@ namespace
 			}
 		}
 		viewDistance = 2.5f;
-		numFlockers = 4;
+		numFlockers = 200;
 		pattern = new Mesh();
 		pattern->load(fileIn, numFlockers, viewDistance);
 		maxSpeed = 1.0f;

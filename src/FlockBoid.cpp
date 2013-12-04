@@ -1,6 +1,6 @@
 #include "FlockBoid.h"
 
-const float avoid = .2f;
+const float avoid = .15f;
 const float velMatch = 0.15f;
 const float center = 0.15f;
 const float pullConstant = 0.05f;
@@ -29,7 +29,7 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 	Vector3f sectionAcc = (0,0,0);
 	Vector3f totalAcc = (0,0,0);
 	Vector3f diff = (0,0,0);
-	int n = 1;
+	float n = 1;
 	//avoid nearby flockmates
 	for(int i = 0; i < nf.size(); i++){
 		diff = pos - nf[i]->getPos(pos);
@@ -63,7 +63,7 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		totalAcc += sectionAcc*(maxSteer-totalAcc.abs())/sectionAcc.abs();
 	}
 	sectionAcc = (0,0,0);
-	n = 1;
+	n = 1.0f;
 	//match center
 	for(int i = 0; i < nf.size(); i++){
 		diff = pos - nf[i]->getPos(pos);		
@@ -80,14 +80,14 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		totalAcc += sectionAcc*(maxSteer-totalAcc.abs())/sectionAcc.abs();
 	}
 	sectionAcc = (0, 0, 0);
-	n = 1;
+	n = 0.5f;
 	//Steer toward attractors
 	for(int i = 0; i < at.size(); i++){
 		diff = pos - at[i]->getPos();
 		if(diff.abs() < vDistance){
 			//cout << " pull = " <<at[i]->getPull()<< endl;
 			//cout << " sectionAcc = ";
-			sectionAcc += -diff*at[i]->getPull()*pullConstant;
+		  sectionAcc += -diff.normalized()*sqrt(diff.abs())*at[i]->getPull()*pullConstant;
 			//sectionAcc.print();
 			//cout << " diff = ";
 			//diff.normalized().print();
