@@ -30,7 +30,7 @@ void AttractorBoid::draw()
 	glPushMatrix();
 	glTranslatef(pos[0], pos[1], pos[2]);
 	if(isDraw){
-	  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 	  glutSolidSphere(0.075f,10.0f,10.0f);
 	}
 	glPopMatrix();
