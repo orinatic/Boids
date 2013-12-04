@@ -11,7 +11,7 @@ AttractorBoid::AttractorBoid(Vector3f position, Vector3f velocity, float pull) :
 	pos = position;
 	vel = velocity;
 	AttractorBoid::pull = pull;
-	isDraw = true;
+	isDraw = false;
 }
 
 Vector3f AttractorBoid::evalF(vector<AttractorBoid*>& nf, vector<AttractorBoid*>& at){
@@ -23,6 +23,10 @@ void AttractorBoid::toggleDraw()
 	isDraw = !isDraw;
 }
 
+bool AttractorBoid::getDraw(){
+	return isDraw;
+}
+
 void AttractorBoid::draw()
 {
 	GLfloat attractorColor[] = {-pull, pull, 0.0f, 0.0f};
@@ -30,7 +34,7 @@ void AttractorBoid::draw()
 	glPushMatrix();
 	glTranslatef(pos[0], pos[1], pos[2]);
 	if(isDraw){
-	  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+	  glColor4f(-pull, pull, 0.5f, 0.5f);
 	  glutSolidSphere(0.075f,10.0f,10.0f);
 	}
 	glPopMatrix();

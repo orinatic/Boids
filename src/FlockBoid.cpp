@@ -4,7 +4,7 @@ const float avoid = .15f;
 const float velMatch = 0.15f;
 const float center = 0.15f;
 const float pullConstant = 0.05f;
-const float minDistance = 0.70f;
+const float minDistance = 0.7f;
 const float maxSteer = .05f;
 float vDistance;;
 Vector3f avoidDir;
@@ -87,7 +87,9 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 		if(diff.abs() < vDistance){
 			//cout << " pull = " <<at[i]->getPull()<< endl;
 			//cout << " sectionAcc = ";
-		  sectionAcc += -diff.normalized()*sqrt(diff.abs())*at[i]->getPull()*pullConstant;
+			if(at[i]->getDraw()==true){
+				sectionAcc += -diff.normalized()*sqrt(diff.abs())*at[i]->getPull()*pullConstant;
+			}
 			//sectionAcc.print();
 			//cout << " diff = ";
 			//diff.normalized().print();

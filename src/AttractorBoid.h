@@ -13,6 +13,7 @@ class AttractorBoid: public GenericBoid
 	
 	void draw();
 	void toggleDraw();
+	bool getDraw();
  private:
 	bool isDraw;
 };

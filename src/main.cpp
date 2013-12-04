@@ -16,6 +16,7 @@ using namespace std;
 
 float maxSpeed;
 float viewDistance;
+float drag = 0.02;
 int numFlockers;
 char* fileIn;
 Mesh* pattern;
@@ -25,24 +26,23 @@ vector<AttractorBoid*> attractors;
 namespace
 {
         
-    // This is the camera
-    Camera camera;
-  int argc;
-  char** argv;
+	Camera camera;
+	int argc;
+	char** argv;
 	
 	void initSystem(int argc, char * argv[])
 	{
+		pattern = new Mesh();
 		for(int argNum = 1; argNum < argc; ++argNum){
 			string arg = argv[argNum];
 			if(arg == "-input"){
 				fileIn = argv[argNum+1];
+				pattern->load(fileIn, numFlockers, viewDistance);
 				argNum++;
 			}
 		}
 		viewDistance = 2.5f;
-		numFlockers = 0;
-		pattern = new Mesh();
-		pattern->load(fileIn, numFlockers, viewDistance);
+		numFlockers = 150;
 		maxSpeed = 1.0f;
 		// seed the random number generator with the current time
 		srand( time( NULL ) );
@@ -50,13 +50,14 @@ namespace
 		attractors = vector<AttractorBoid*>();
 		//flockers.push_back(new FlockBoid(Vector3f(0,0,0), Vector3f(.1,.1,.1)));
 		//flockers.push_back(new FlockBoid(Vector3f(1,1,1), Vector3f(-.1,-.1,.1)));	
-		float posStart = 2.0f;
-		float velStart = 0.2f;
+		float posStart = 1.0f;
+		float velStart = 0.3f;
 		float attractorPull = 2.0f;
 		cout << "number of vertices" << pattern->vertices.size() << endl;
-		for(int i = 0; i < pattern->vertices.size(); i++){
+		for(int i = 0; i < pattern->vertices.size()-1; i++){
 			attractors.push_back(new AttractorBoid(pattern->vertices[i], Vector3f(0,0,0), attractorPull));
 		}
+		attractors.push_back(new AttractorBoid(pattern->vertices[pattern->vertices.size()-1], Vector3f(0,0,0), -3*attractorPull));
 		for(int i = 0; i < numFlockers; i++){
 				flockers.push_back(new FlockBoid(
 											  Vector3f(posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart, posStart*2*rand()/RAND_MAX-posStart),
@@ -75,14 +76,6 @@ namespace
 	  Vector3f averageVel = (0, 0, 0);
 	  for(int i = 0; i < flockers.size(); i++){
 		  Vector3f acc = flockers[i]->evalF(flockers, attractors);
-		  if(acc.abs() !=0){
-			  // cout << "number is " << i << " and acc is ";
-			  // acc.print();
-			  // cout << "vel is ";
-			  //flockers[i]->getVel().print();
-			  //cout << "pos is ";
-			  //flockers[i]->getPos().print();
-		  }
 		  Vector3f newPos = flockers[i]->getPos() + flockers[i]->getVel()*0.1f;
 		  float SIZE = 10.0f;
 		  Vector3f newVel = (flockers[i]->getVel() + acc);

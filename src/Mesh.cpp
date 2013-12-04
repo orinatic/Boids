@@ -12,7 +12,7 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 	string line;
 	ifstream file(filename);
 	Vector3f v;
-	Vector3f center = Vector3f(0,0,0);
+	Vector3f shapeCenter = Vector3f(0,0,0);
 	Tuple3u vf;
 		
 	std::vector<Tuple3u> uFaces;
@@ -24,7 +24,7 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 			if(start == "v"){
 				ss >> v[0] >> v[1] >> v[2];
 				vertices.push_back(v);
-				center+= v;
+				shapeCenter+= v;
 				cout << "Vertex = " ;
 				v.print();
 			}
@@ -34,7 +34,7 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 				cout << "vf is " << vf[0] << "," <<vf[1] << "," << vf[2] << endl;
 			}
 		}
-		center = center/vertices.size();
+		shapeCenter = shapeCenter/vertices.size();
 		while(uFaces.size() > 0) {
 		  cout << uFaces.size() << endl;
 		  Tuple3u f = uFaces.back();
@@ -51,7 +51,7 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 		  cout << radius << endl;
 		  center.print();
 		  
-		  if(radius > 0.75 * vDistance) {
+		  if(radius > vDistance) {
 		    int n = vertices.size() + 1;
 		    vertices.push_back((vertices[f[1] - 1] + vertices[f[0] - 1]) / 2.0f);
 		    vertices.push_back((vertices[f[2] - 1] + vertices[f[1] - 1]) / 2.0f);
@@ -60,6 +60,7 @@ void Mesh::load( const char* filename, const int numBoids, const float vDistance
 		  }
 		  faces.push_back(f);
 		}
+		vertices.push_back(shapeCenter);
 	}
 }
 
