@@ -78,19 +78,3 @@ Vector3f FlockBoid::evalF(vector<FlockBoid*>& nf, vector<AttractorBoid*>& at){
 	}
 	return (totalAcc);
 }
-
-void FlockBoid::draw()
-{
-	GLfloat flockColor[] = {0.0f, 0.5f, 0.5f, 0.0f};
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, flockColor);
-	glPushMatrix();
-	glTranslatef(pos[0], pos[1], pos[2]);
-	Vector3f voff = vel.normalized() * 0.025f;
-	for(int i = 0; i < 10; i++) {
-	  float d = (1.0f - i * 0.1f);
-	  glColor4f(vel[0] + 0.5f, vel[1] + 0.5f, vel[2] + 0.5f, d);
-	  glTranslatef(-voff[0], -voff[1], -voff[2]);
-	  glutSolidSphere(0.075f - i * 0.005f,10.0f,10.0f);
-	}
-	glPopMatrix();
-}

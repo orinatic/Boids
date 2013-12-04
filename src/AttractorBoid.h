@@ -1,7 +1,7 @@
 #ifndef ATTRACTORBOID_H
 #define ATTRACTORBOID_H
 
-#include "RepulsorBoids.h"
+#include "GenericBoid.h"
 
 class AttractorBoid: public GenericBoid
 {

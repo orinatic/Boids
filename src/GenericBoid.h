@@ -1,6 +1,7 @@
 #ifndef GENERICBOID_H
 #define GENERICBOID_H
 
+#include "extra.h"
 #include <vector>
 #include <vecmath.h>
 #include <iostream>

@@ -2,8 +2,6 @@
 #define REPULSORBOIDS_H
 
 #include "GenericBoid.h"
-#include "extra.h"
-#include <vector>
 
 class RepulsorBoids: public GenericBoid
 {
